@@ -1,7 +1,8 @@
-# import settings
+import settings
 from flask import Flask,jsonify, request as req
 
 app = Flask(__name__)
+conn = settings.init()
 @app.after_request
 def after_request(response):
     header = response.headers
@@ -11,6 +12,9 @@ def after_request(response):
     return response
 
 
-@app.route('/all')
+@app.route('/all', methods = ['GET'])
 def all():
-    return jsonify({'data':"SSS"})
+    query = "SELECT * FROM reservas"
+    bookings = conn.get_all_bookings(query)
+    return jsonify(bookings)
+
