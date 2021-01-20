@@ -1,11 +1,20 @@
-import React, { Component } from 'react'
-
+import React, { Component, useState } from 'react'
+import Popform from './Popform'
+import Popremove from './Popremove'
+import { Modal } from 'react-responsive-modal'
+import 'react-responsive-modal/styles.css';
 class Mainscreen extends Component {
     constructor(props){
         super(props)
         this.state = {
-            reservas: []
+            reservas: [],
+            openForm: false,
+            openRemove: false
         }
+        this.onOpenModalForm = this.onOpenModalForm.bind(this)
+        this.onCloseModalForm = this.onCloseModalForm.bind(this)
+        this.onOpenModalRemove = this.onOpenModalRemove.bind(this)
+        this.onCloseModalRemove = this.onCloseModalRemove.bind(this)
     }
     componentDidMount = () => {
         let url = "http://localhost:5000/all"
@@ -17,7 +26,29 @@ class Mainscreen extends Component {
                 })
             })
     }
+    onOpenModalRemove = () =>{
+        this.setState({
+            openRemove: true
+        })
+    }
+    onCloseModalRemove = () =>{
+        this.setState({
+            openRemove: false
+        })
+    }
+    onOpenModalForm = () =>{
+        this.setState({
+            openForm: true
+        })
+    }
+    onCloseModalForm = () =>{
+        this.setState({
+            openForm: false
+        })
+    }
     render = () => {
+        const open  = this.state.openForm
+        const openRemove = this.state.openRemove
         const max_bookings = 33
         let colorText = ""
         this.state.reservas.length <= 15 ? colorText = "text-success" 
@@ -35,7 +66,7 @@ class Mainscreen extends Component {
             </td>
             <td className="d-flex justify-content-around align-items-center">
                 {el.dni}
-                <button className="btn btn-danger">
+                <button className="btn btn-danger" onClick={this.onOpenModalRemove}>
                     Eliminar reserva
                 </button>
             </td>
@@ -59,10 +90,12 @@ class Mainscreen extends Component {
                     <p className = {colorText}>
                         {this.state.reservas.length}/{max_bookings}
                     </p>
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={this.onOpenModalForm}>
                         Haz tu reserva ya!
                     </button>
                 </div>
+                <Popform open={open} onClose={this.onCloseModalForm}/>
+                <Popremove open={openRemove} onClose={this.onCloseModalRemove}/> 
             </div>
         )
     }

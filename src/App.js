@@ -9,7 +9,7 @@ class App extends Component {
   render = () =>{
     return(
       <BrowserRouter>
-        <div className="">
+        <div className="container">
           <Route exact path="/" component={Mainscreen}/>
         </div>
       </BrowserRouter>
