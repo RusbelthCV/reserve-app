@@ -15,6 +15,7 @@ class Mainscreen extends Component {
         this.onCloseModalForm = this.onCloseModalForm.bind(this)
         this.onOpenModalRemove = this.onOpenModalRemove.bind(this)
         this.onCloseModalRemove = this.onCloseModalRemove.bind(this)
+        this.enviar = this.enviar.bind(this)
     }
     componentDidMount = () => {
         let url = "http://localhost:5000/all"
@@ -22,8 +23,31 @@ class Mainscreen extends Component {
             .then(data => data.json())
             .then(data => {
                 this.setState({
-                    reservas: data.bookings
+                    reservas: data.bookings,
+                    messageForm: ""
                 })
+            })
+    }
+    enviar = e =>{
+        let url = "http://localhost:5000/save"
+        e.preventDefault()
+        fetch(url)
+            .then(respuesta => respuesta.json())
+            .then(respuesta => {
+                if(respuesta.ok){
+                    this.setState({
+                        error: false,
+                        messageForm: "Se ha efectuado la reserva correctamente"
+                    })
+                    this.props.history.push("/")
+                }
+                else{
+                    this.setState({
+                        error: true,
+                        messageForm: "No se ha podido efectuar la reserva"
+                    })
+                }
+                
             })
     }
     onOpenModalRemove = () =>{
@@ -54,6 +78,10 @@ class Mainscreen extends Component {
         this.state.reservas.length <= 15 ? colorText = "text-success" 
         : this.state.reservas.length <= max_bookings - 5 
         ? colorText = "text-warning" : colorText = "text-danger"
+        let div_message = ""
+        this.state.error
+        ? div_message = <div className="alert alert-danger">{this.state.messageForm}</div>
+        : div_message = <div className="alert alert-success">{this.state.messageForm}</div>
         let bookings = this.state.reservas.map(el => <tr key = {el.id}>
             <td className="align-middle">
                 {el.nombre}
@@ -86,7 +114,7 @@ class Mainscreen extends Component {
                         {bookings}
                     </tbody>
                 </table>
-                <div className="end-table d-flex justify-content-between px-5">
+                <div className="d-flex justify-content-between px-5">
                     <p className = {colorText}>
                         {this.state.reservas.length}/{max_bookings}
                     </p>
@@ -94,7 +122,8 @@ class Mainscreen extends Component {
                         Haz tu reserva ya!
                     </button>
                 </div>
-                <Popform open={open} onClose={this.onCloseModalForm}/>
+                {/* {div_message} */}
+                <Popform open={open} onClose={this.onCloseModalForm} enviar = {this.enviar}/>
                 <Popremove open={openRemove} onClose={this.onCloseModalRemove}/> 
             </div>
         )

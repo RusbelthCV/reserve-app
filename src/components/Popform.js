@@ -6,14 +6,16 @@ class Popform extends Component{
         super(props)
         this.state = {
            open: this.props.open 
-        } 
+        }
+        // this.enviar = this.enviar.bind(this)
     }
+    
     render = () =>{
         return(
             <Modal open={this.props.open} onClose={this.props.onClose} center>
                 <div className="container">
                     <h2>Haz tu reserva</h2>
-                    <form>
+                    <form method="POST" onSubmit={ e => this.props.enviar(e) }>
                         <div className="form-group text-center">
                             <label for="name" className="col-form-label">Nombre</label>
                             <input name="name" className="form-control" id="name" type="text" required />
@@ -37,6 +39,9 @@ class Popform extends Component{
                             <button type="reset" className="btn btn-danger">
                                 Reset
                             </button>
+                        </div>
+                        <div >
+
                         </div>
                     </form>
                 </div>

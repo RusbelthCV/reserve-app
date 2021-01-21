@@ -7,7 +7,7 @@ class Connection:
         except Exception as err:
             print(err.__str__())
 
-    def execut(self,query, args = None):
+    def execute(self,query, args = None):
         if args != None:
             try:
                 self.__cur.execute(query, args)
@@ -33,7 +33,7 @@ class Connection:
     def get_all_bookings(self, query):
         bookings = []
         try:
-            self.__cur.execute(query)
+            self.execute(query)
             rows = self.__cur.fetchall()
             for row in rows:
                 bookings.append({
@@ -45,3 +45,12 @@ class Connection:
         except Exception as err:
             print(err.__str__())
         return ({'bookings':bookings})
+    def insert_booking(self, query, args):
+        flag_insert = False
+        try:
+            self.execute(query, args)
+            flag_insert = True
+        except Exception as err:
+            print(err)
+            flag_insert = False
+        return {'ok': flag_insert}

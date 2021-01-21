@@ -1,5 +1,6 @@
 import settings
 from flask import Flask,jsonify, request as req
+from random import randint
 
 app = Flask(__name__)
 conn = settings.init()
@@ -18,3 +19,15 @@ def all():
     bookings = conn.get_all_bookings(query)
     return jsonify(bookings)
 
+@app.route('/save', methods = ['POST','GET'])
+def save():
+    name = req.form.get('name')
+    address = req.form.get('direccion')
+    tel = req.form.get('tel')
+    dni = req.form.get('dni')
+    pin = randint(0000,9999)
+
+    query = "INSERT INTO reservas(nombre,direccion,telefono,dni,pin) values (%s,%s,%s,%s,%s)" 
+    args = (name, address, tel, dni, pin)
+    json_insert = conn.insert_booking(query, args)
+    return jsonify(json_insert
