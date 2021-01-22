@@ -48,9 +48,21 @@ class Connection:
     def insert_booking(self, query, args):
         flag_insert = False
         try:
-            self.execute(query, args)
+            self.__cur.execute(query, args)
+            self.commit()
             flag_insert = True
         except Exception as err:
-            print(err)
             flag_insert = False
+            print(err)
         return {'ok': flag_insert}
+    def delete_booking(self,query, args):
+        flag_delete = False
+        try:
+            self.__cur.execute(query, args)
+            self.commit()
+            flag_delete = True
+        except Exception as err:
+            print(err)
+        return({
+            'ok': flag_delete 
+        })

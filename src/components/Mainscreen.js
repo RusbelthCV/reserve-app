@@ -1,7 +1,6 @@
-import React, { Component, useState } from 'react'
+import React, { Component } from 'react'
 import Popform from './Popform'
 import Popremove from './Popremove'
-import { Modal } from 'react-responsive-modal'
 import 'react-responsive-modal/styles.css';
 class Mainscreen extends Component {
     constructor(props){
@@ -15,7 +14,6 @@ class Mainscreen extends Component {
         this.onCloseModalForm = this.onCloseModalForm.bind(this)
         this.onOpenModalRemove = this.onOpenModalRemove.bind(this)
         this.onCloseModalRemove = this.onCloseModalRemove.bind(this)
-        this.enviar = this.enviar.bind(this)
     }
     componentDidMount = () => {
         let url = "http://localhost:5000/all"
@@ -28,31 +26,11 @@ class Mainscreen extends Component {
                 })
             })
     }
-    enviar = e =>{
-        let url = "http://localhost:5000/save"
-        e.preventDefault()
-        fetch(url)
-            .then(respuesta => respuesta.json())
-            .then(respuesta => {
-                if(respuesta.ok){
-                    this.setState({
-                        error: false,
-                        messageForm: "Se ha efectuado la reserva correctamente"
-                    })
-                    this.props.history.push("/")
-                }
-                else{
-                    this.setState({
-                        error: true,
-                        messageForm: "No se ha podido efectuar la reserva"
-                    })
-                }
-                
-            })
-    }
-    onOpenModalRemove = () =>{
+    
+    onOpenModalRemove = dni =>{
         this.setState({
-            openRemove: true
+            openRemove: true,
+            dni: dni
         })
     }
     onCloseModalRemove = () =>{
@@ -61,9 +39,14 @@ class Mainscreen extends Component {
         })
     }
     onOpenModalForm = () =>{
-        this.setState({
-            openForm: true
-        })
+        if(this.state.reservas.length <= 33){
+            this.setState({
+                openForm: true
+            })    
+        }
+        else{
+            alert("Lo sentimos, debido a las normativas del covid no podemos permitir alojar más personas en el local")
+        }
     }
     onCloseModalForm = () =>{
         this.setState({
@@ -78,10 +61,6 @@ class Mainscreen extends Component {
         this.state.reservas.length <= 15 ? colorText = "text-success" 
         : this.state.reservas.length <= max_bookings - 5 
         ? colorText = "text-warning" : colorText = "text-danger"
-        let div_message = ""
-        this.state.error
-        ? div_message = <div className="alert alert-danger">{this.state.messageForm}</div>
-        : div_message = <div className="alert alert-success">{this.state.messageForm}</div>
         let bookings = this.state.reservas.map(el => <tr key = {el.id}>
             <td className="align-middle">
                 {el.nombre}
@@ -94,7 +73,7 @@ class Mainscreen extends Component {
             </td>
             <td className="d-flex justify-content-around align-items-center">
                 {el.dni}
-                <button className="btn btn-danger" onClick={this.onOpenModalRemove}>
+                <button className="btn btn-danger" onClick={ () => this.onOpenModalRemove(el.dni) } >
                     Eliminar reserva
                 </button>
             </td>
@@ -122,9 +101,8 @@ class Mainscreen extends Component {
                         Haz tu reserva ya!
                     </button>
                 </div>
-                {/* {div_message} */}
-                <Popform open={open} onClose={this.onCloseModalForm} enviar = {this.enviar}/>
-                <Popremove open={openRemove} onClose={this.onCloseModalRemove}/> 
+                <Popform open={open} onClose={this.onCloseModalForm} />
+                <Popremove open={openRemove} onClose={this.onCloseModalRemove} dni={this.state.dni}/> 
             </div>
         )
     }
